@@ -66,8 +66,13 @@ namespace CustomTypeBuilder
             // add types in interface
             type.GetProperties().ForEach(x => AddProperty(x.Name, x.PropertyType));
         }
-        
-        public void ExtendType(Type type) => type.GetProperties().ForEach(x => AddProperty(x.Name, x.PropertyType));
+
+        public void ExtendType(Type type)
+        {
+            // type.GetProperties().ForEach(x => AddProperty(x.Name, x.PropertyType));
+
+            _typeBuilder.SetParent(type);
+        }
 
         public void AddProperty(string propertyName, Type propertyType)
         {

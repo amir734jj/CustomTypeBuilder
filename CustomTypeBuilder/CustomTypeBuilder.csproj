@@ -4,6 +4,7 @@
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <RepositoryUrl>https://github.com/amir734jj/CustomTypeBuilder.git</RepositoryUrl>
     <Description>Custom type builder in C#</Description>
+    <PackageProjectUrl>https://github.com/amir734jj/CustomTypeBuilder.git</PackageProjectUrl>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="System.Reflection.Emit" Version="4.0.1" />
