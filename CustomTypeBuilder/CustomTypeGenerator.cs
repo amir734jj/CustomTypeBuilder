@@ -15,7 +15,7 @@ namespace CustomTypeBuilder
     {
         private readonly TypeBuilder _typeBuilder;
 
-        private Dictionary<string, Type> _properties;
+        private readonly Dictionary<string, Type> _properties;
 
         /// <summary>
         /// Initialize custom type builder
@@ -35,7 +35,7 @@ namespace CustomTypeBuilder
                 TypeAttributes.BeforeFieldInit |
                 TypeAttributes.AutoLayout,
                 parentType);
-            
+                        
             _typeBuilder.DefineDefaultConstructor(MethodAttributes.Public | MethodAttributes.SpecialName | MethodAttributes.RTSpecialName);
             
             _properties = new Dictionary<string, Type>();
