@@ -9,7 +9,7 @@ namespace CustomTypeBuilder.Builders
     {
         private readonly CustomTypeGenerator _dynamicTypeObject;
 
-        private CustomTypeBuilder(string name = null, Type type = null) => _dynamicTypeObject = new CustomTypeGenerator(name, type);
+        private CustomTypeBuilder(string name = null, Type type = null, string @namespace = null) => _dynamicTypeObject = new CustomTypeGenerator(name, type, @namespace);
 
         public CustomTypeBuilder Extend<T>() => Extend(typeof(T));
 
@@ -45,14 +45,14 @@ namespace CustomTypeBuilder.Builders
             return this;
         }
 
-        public static CustomTypeBuilder NewExtend(Type type, string name = null) => new CustomTypeBuilder(name, type);
+        public static CustomTypeBuilder NewExtend(Type type, string name = null, string @namespace = null) => new CustomTypeBuilder(name, type, @namespace);
 
-        public static CustomTypeBuilder NewExtend<T>(string name = null) => new CustomTypeBuilder(name, typeof(T));
+        public static CustomTypeBuilder NewExtend<T>(string name = null, string @namespace = null) => new CustomTypeBuilder(name, typeof(T), @namespace);
 
         public Type Compile() => _dynamicTypeObject.CompileResultType();
 
         public T Instantiate<T>() where T : class => Activator.CreateInstance(_dynamicTypeObject.CompileResultType()) as T;
 
-        public static CustomTypeBuilder New(string name = null) => new CustomTypeBuilder(name);
+        public static CustomTypeBuilder New(string name = null, string @namespace = null) => new CustomTypeBuilder(name, @namespace: @namespace);
     }
 }

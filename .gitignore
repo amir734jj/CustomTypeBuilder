@@ -21,3 +21,9 @@ CustomTypeBuilder.Tests/obj/Debug/netcoreapp2.0/CustomTypeBuilder.Tests.Program.
 CustomTypeBuilder.Tests/obj/CustomTypeBuilder.Tests.csproj.nuget.g.props
 CustomTypeBuilder.Tests/obj/CustomTypeBuilder.Tests.csproj.nuget.g.targets
 CustomTypeBuilder.Tests/obj/project.assets.json
+
+CustomTypeBuilder/obj/
+
+CustomTypeBuilder\.Tests/bin/
+
+CustomTypeBuilder\.Tests/obj/

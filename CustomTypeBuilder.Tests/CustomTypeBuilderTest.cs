@@ -83,11 +83,30 @@ namespace CustomTypeBuilder.Tests
                 .AddProperty<string>(propertyName)
                 .AddAttribute(new RequiredAttribute())
                 .Instantiate<DummyClass>();
-
-            var taha = obj.GetType().GetCustomAttributes();
             
             // Assert
             Assert.True(obj.GetType().GetCustomAttributes().Any(x => x is RequiredAttribute));
+        }
+        
+        [Fact]
+        public void Test__NestedTypes()
+        {
+            // Arrange
+            var token = "TestNameSpace";
+            var nestedType = Builders.CustomTypeBuilder.New(@namespace: token).AddProperty<string>("NestedProp").Compile();
+            var propertyName = "NewProperty";
+
+            // Act
+            var obj = Builders.CustomTypeBuilder.NewExtend<DummyClass>(@namespace: token)
+                .AddProperty(propertyName, nestedType)
+                .Instantiate<DummyClass>();
+
+            var nestedValue = Activator.CreateInstance(nestedType);
+            nestedValue.GetType().GetProperty("NestedProp").SetValue(nestedValue, "NestedValue");
+            obj.GetType().GetProperty(propertyName).SetValue(obj, nestedValue);
+            
+            // Assert
+            Assert.Equal(nestedType, obj.GetType().GetProperty(propertyName).PropertyType);
         }
     }
 }

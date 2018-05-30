@@ -22,10 +22,19 @@ namespace CustomTypeBuilder
         /// </summary>
         /// <param name="name"></param>
         /// <param name="parentType"></param>
-        public CustomTypeGenerator(string name = null, Type parentType = null)
+        /// <param name="namespace"></param>
+        public CustomTypeGenerator(string name = null, Type parentType = null, string @namespace = null)
         {
+            var assemblyName = RandomSafeString("DynamicAseembly");
             var typeSignature = name ?? RandomSafeString("DynamicType");
-            var assemblyBuilder = AssemblyBuilder.DefineDynamicAssembly(new AssemblyName(typeSignature), AssemblyBuilderAccess.Run);
+
+            // add namespace
+            if (@namespace != name)
+            {
+                typeSignature = $"{@namespace}.{typeSignature}";
+            }
+            
+            var assemblyBuilder = AssemblyBuilder.DefineDynamicAssembly(new AssemblyName(assemblyName), AssemblyBuilderAccess.Run);
             var moduleBuilder = assemblyBuilder.DefineDynamicModule(RandomSafeString("Module"));
             _typeBuilder = moduleBuilder.DefineType(typeSignature,
                 TypeAttributes.Public |
