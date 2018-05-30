@@ -1,6 +1,9 @@
 using CustomTypeBuilder.Extensions;
 using System;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
+using System.Reflection;
+using Newtonsoft.Json;
 using Xunit;
 
 namespace CustomTypeBuilder.Tests
@@ -67,6 +70,24 @@ namespace CustomTypeBuilder.Tests
             Assert.True(typeof(DummyClass).GetProperties()
                 .Zip(type.GetProperties(), (x, y) => x.PropertyType == y.PropertyType && x.Name == y.Name)
                 .All(x => x));
+        }
+        
+        [Fact]
+        public void Test__CustomAttribute()
+        {
+            // Arrange
+            var propertyName = "NewProperty";
+
+            // Act
+            var obj = Builders.CustomTypeBuilder.NewExtend<DummyClass>()
+                .AddProperty<string>(propertyName)
+                .AddAttribute(new RequiredAttribute())
+                .Instantiate<DummyClass>();
+
+            var taha = obj.GetType().GetCustomAttributes();
+            
+            // Assert
+            Assert.True(obj.GetType().GetCustomAttributes().Any(x => x is RequiredAttribute));
         }
     }
 }
