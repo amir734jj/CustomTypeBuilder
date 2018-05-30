@@ -37,10 +37,19 @@ namespace CustomTypeBuilder
                 parentType);
             
             _typeBuilder.DefineDefaultConstructor(MethodAttributes.Public | MethodAttributes.SpecialName | MethodAttributes.RTSpecialName);
-
+            
             _properties = new Dictionary<string, Type>();
         }
 
+        /// <summary>
+        /// Add attribute to the class
+        /// </summary>
+        /// <param name="attribute"></param>
+        public void AddAttribute(Attribute attribute)
+        {
+            _typeBuilder.SetCustomAttribute(attribute.BuildCustomAttribute());
+        }
+        
         /// <summary>
         /// Compile the type builder to a type
         /// </summary>

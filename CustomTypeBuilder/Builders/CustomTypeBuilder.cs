@@ -38,6 +38,13 @@ namespace CustomTypeBuilder.Builders
             return this;
         }
 
+        public CustomTypeBuilder AddAttribute(Attribute attribute)
+        {
+            _dynamicTypeObject.AddAttribute(attribute);
+            
+            return this;
+        }
+
         public static CustomTypeBuilder NewExtend(Type type, string name = null) => new CustomTypeBuilder(name, type);
 
         public static CustomTypeBuilder NewExtend<T>(string name = null) => new CustomTypeBuilder(name, typeof(T));
