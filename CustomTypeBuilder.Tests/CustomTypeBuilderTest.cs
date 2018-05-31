@@ -3,7 +3,6 @@ using System;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Reflection;
-using Newtonsoft.Json;
 using Xunit;
 
 namespace CustomTypeBuilder.Tests
@@ -14,10 +13,12 @@ namespace CustomTypeBuilder.Tests
         public void Test__ExtraProperty()
         {
             // Arrange
-            var propertyName = "NewProperty";
+            const string propertyName = "NewProperty";
 
             // Act
-            var obj = Builders.CustomTypeBuilder.NewExtend<DummyClass>()
+            var obj = Builders.CustomTypeBuilder.New()
+                .FinalizeOptionsBuilder()
+                .Extend<DummyClass>()
                 .AddProperty<string>(propertyName)
                 .Instantiate<DummyClass>();
 
@@ -29,10 +30,12 @@ namespace CustomTypeBuilder.Tests
         public void Test__TypeCheck()
         {
             // Arrange
-            var propertyName = "NewProperty";
+            const string propertyName = "NewProperty";
 
             // Act
-            var type = Builders.CustomTypeBuilder.NewExtend<DummyClass>()
+            var type = Builders.CustomTypeBuilder.New()
+                .FinalizeOptionsBuilder()
+                .Extend<DummyClass>()
                 .AddProperty<string>(propertyName)
                 .Compile();
 
@@ -44,10 +47,12 @@ namespace CustomTypeBuilder.Tests
         public void Test__DupliatePropertyName()
         {
             // Arrange
-            var propertyName = "NewProperty";
+            const string propertyName = "NewProperty";
 
             // Act
-            var action = new Action(() => Builders.CustomTypeBuilder.NewExtend<DummyClass>()
+            var action = new Action(() => Builders.CustomTypeBuilder.New()
+                .FinalizeOptionsBuilder()
+                .Extend<DummyClass>()
                 .AddProperty<string>(propertyName)
                 .AddProperty<int>(propertyName)
                 .Compile());
@@ -60,7 +65,7 @@ namespace CustomTypeBuilder.Tests
         public void Test__CompletelyNewType()
         {
             // Arrange
-            var builder = Builders.CustomTypeBuilder.New();
+            var builder = Builders.CustomTypeBuilder.New().FinalizeOptionsBuilder();
 
             // Act
             typeof(DummyClass).GetProperties().ForEach(x => builder.AddProperty(x.Name, x.PropertyType));
@@ -76,10 +81,10 @@ namespace CustomTypeBuilder.Tests
         public void Test__CustomAttribute()
         {
             // Arrange
-            var propertyName = "NewProperty";
+            const string propertyName = "NewProperty";
 
             // Act
-            var obj = Builders.CustomTypeBuilder.NewExtend<DummyClass>()
+            var obj = Builders.CustomTypeBuilder.New().FinalizeOptionsBuilder().Extend<DummyClass>()
                 .AddProperty<string>(propertyName)
                 .AddAttribute(new RequiredAttribute())
                 .Instantiate<DummyClass>();
@@ -92,18 +97,21 @@ namespace CustomTypeBuilder.Tests
         public void Test__NestedTypes()
         {
             // Arrange
-            var token = "TestNameSpace";
-            var nestedType = Builders.CustomTypeBuilder.New(@namespace: token).AddProperty<string>("NestedProp").Compile();
-            var propertyName = "NewProperty";
+            var nestedType = Builders.CustomTypeBuilder.New()
+                .FinalizeOptionsBuilder()
+                .AddProperty<string>("NestedProp")
+                .GetModuleBuilder(out var moduleBuilder)
+                .Compile();
+            
+            const string propertyName = "NestedProp";
 
             // Act
-            var obj = Builders.CustomTypeBuilder.NewExtend<DummyClass>(@namespace: token)
+            var obj = Builders.CustomTypeBuilder.New()
+                .SetModuleBuilder(moduleBuilder)
+                .FinalizeOptionsBuilder()
+                .Extend<DummyClass>()
                 .AddProperty(propertyName, nestedType)
                 .Instantiate<DummyClass>();
-
-            var nestedValue = Activator.CreateInstance(nestedType);
-            nestedValue.GetType().GetProperty("NestedProp").SetValue(nestedValue, "NestedValue");
-            obj.GetType().GetProperty(propertyName).SetValue(obj, nestedValue);
             
             // Assert
             Assert.Equal(nestedType, obj.GetType().GetProperty(propertyName).PropertyType);

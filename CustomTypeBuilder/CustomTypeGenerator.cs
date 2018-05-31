@@ -16,6 +16,8 @@ namespace CustomTypeBuilder
         private readonly TypeBuilder _typeBuilder;
 
         private readonly Dictionary<string, Type> _properties;
+        
+        private readonly ModuleBuilder _moduleBuilder;
 
         /// <summary>
         /// Initialize custom type builder
@@ -23,7 +25,8 @@ namespace CustomTypeBuilder
         /// <param name="name"></param>
         /// <param name="parentType"></param>
         /// <param name="namespace"></param>
-        public CustomTypeGenerator(string name = null, Type parentType = null, string @namespace = null)
+        /// <param name="moduleBuilder"></param>
+        public CustomTypeGenerator(string name = null, Type parentType = null, string @namespace = null, ModuleBuilder moduleBuilder = null)
         {
             var assemblyName = RandomSafeString("DynamicAseembly");
             var typeSignature = name ?? RandomSafeString("DynamicType");
@@ -33,9 +36,16 @@ namespace CustomTypeBuilder
             {
                 typeSignature = $"{@namespace}.{typeSignature}";
             }
-            
-            var assemblyBuilder = AssemblyBuilder.DefineDynamicAssembly(new AssemblyName(assemblyName), AssemblyBuilderAccess.Run);
-            var moduleBuilder = assemblyBuilder.DefineDynamicModule(RandomSafeString("Module"));
+
+            // set module builder if any
+            if (moduleBuilder == null)
+            {
+                var assemblyBuilder = AssemblyBuilder.DefineDynamicAssembly(new AssemblyName(assemblyName), AssemblyBuilderAccess.Run);
+                moduleBuilder = assemblyBuilder.DefineDynamicModule(RandomSafeString("Module"));
+            }
+
+            _moduleBuilder = moduleBuilder;
+
             _typeBuilder = moduleBuilder.DefineType(typeSignature,
                 TypeAttributes.Public |
                 TypeAttributes.Class |
@@ -50,6 +60,12 @@ namespace CustomTypeBuilder
             _properties = new Dictionary<string, Type>();
         }
 
+        /// <summary>
+        /// Get ModuleBuilder
+        /// </summary>
+        /// <returns></returns>
+        public ModuleBuilder GetModuleBuilder() => _moduleBuilder;
+        
         /// <summary>
         /// Add attribute to the class
         /// </summary>
@@ -87,8 +103,6 @@ namespace CustomTypeBuilder
 
         public void ExtendType(Type type)
         {
-            // type.GetProperties().ForEach(x => AddProperty(x.Name, x.PropertyType));
-
             _typeBuilder.SetParent(type);
         }
 
